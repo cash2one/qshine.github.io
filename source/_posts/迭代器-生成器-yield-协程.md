@@ -1,7 +1,8 @@
 ---
 title: 迭代器/生成器/yield/协程
 date: 2017-08-23 12:03:40
-tags: Python
+categories: Python
+tags: 
 ---
 
 关于yield关键字可以看[stackoverflow回答](https://stackoverflow.com/questions/231767/what-does-the-yield-keyword-do), 总结一下几个概念
