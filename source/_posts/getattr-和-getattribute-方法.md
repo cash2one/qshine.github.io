@@ -35,7 +35,7 @@ china
 """
 ```
 
-
+<!--more-->
 
 #### \__setattr__(self, item, value)
 
