@@ -68,6 +68,8 @@ Out[15]: 1
 In [16]:
 ```
 
+<!--more-->
+
 ### 生成器(generator)
 
  仅仅需要一个yield关键字, 返回值不需要return, 仅仅需要yield, 在每次进行迭代时返回一个值，直到遇到`StopIteration`异常结束

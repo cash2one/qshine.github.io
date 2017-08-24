@@ -55,10 +55,10 @@ tags:
   0a191b4 HEAD@{2}: commit (initial): 第一次提交
   ql@ubuntu:~/toturial$ 
   ```
-- `git reset --hard HEAD`
+- `git reset --hard HEAD^`
   回到上一个版本
 - `git reset --hard 版本号`
-  该命令可以回到之前的任意版本, HEAD命令只能回到最近的一次版本
+  该命令可以回到之前的任意版本, HEAD^命令只能回到最近的一次版本
 - `git checkout 版本号 -- 文件名`
   将文件恢复到指定版本(一般指单个文件)
   ```
@@ -71,7 +71,7 @@ tags:
   ql@ubuntu:~/toturial$ git checkout 15c1c20 -- 1.py
   ```
 - `git checkout -- 文件名`
-  恢复回之前的最新提交版本
+  在add前丢掉工作去的修改
 - `git log --oneline --graph`
   ```
   ql@ubuntu:~/Test$ git log --oneline --graph 
