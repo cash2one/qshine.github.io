@@ -7,10 +7,14 @@ tags:
 ---
 
 ### git常用命令总结
+
 - `git add filename`
+
 - `git commit -m "some info"`
-- `git rm --cached <filename>`
-  用于`git add`后进行撤销
+
+- `git reset HEAD`
+  用于`git add`后进行撤销, 会回到modified的状态
+
 - `git commit --amend --no-edit`
   应用场景: 上一次commit后遗忘了某些东西, 现在修改后还想提交到上一次的commit中, 不然只使用`git commit -m "test"`会新增一条commit记录
   但是`git reflog`和`git log --oneline`显示的会不一样, `git reflog`会显示一条类似amend的记录
@@ -32,12 +36,16 @@ tags:
 
 - `git status -s`
   缩写形式查看状态
+
 - `git diff`
   查看**工作**区与上一次提交的不同, 如果add后是不能显示的
+
 - `git diff --cached`
   查看**暂存区**与上一次提交的不同, 即查看add后的不同
+
 - `git diff HEAD`
   查看**工作区**和**暂存区**与**上一次提交**的所有不同
+
 - `git log --oneline`
   查看commit的日志
   ```
@@ -46,6 +54,7 @@ tags:
   2015298 change 1
   0a191b4 第一次提交
   ```
+
 - `git reflog`
   查看总的提交情况
   ```
@@ -55,10 +64,13 @@ tags:
   0a191b4 HEAD@{2}: commit (initial): 第一次提交
   ql@ubuntu:~/toturial$ 
   ```
+
 - `git reset --hard HEAD^`
   回到上一个版本
+
 - `git reset --hard 版本号`
   该命令可以回到之前的任意版本, HEAD^命令只能回到最近的一次版本
+
 - `git checkout 版本号 -- 文件名`
   将文件恢复到指定版本(一般指单个文件)
   ```
@@ -70,8 +82,10 @@ tags:
   ql@ubuntu:~/toturial$ 
   ql@ubuntu:~/toturial$ git checkout 15c1c20 -- 1.py
   ```
+
 - `git checkout -- 文件名`
   在add前丢掉工作去的修改
+
 - `git log --oneline --graph`
   ```
   ql@ubuntu:~/Test$ git log --oneline --graph 
@@ -92,9 +106,11 @@ tags:
   ```
 
   如上, 可以看到分支合并的信息
+
 - `git commit -am "info"`
   提交的时候自动add
   只针对于之前已经add过得文件, 如果是新文件的话还需要先执行add
+
 - `git stash`
   比如工作突然被打断要改bug，可以新建bug分支解决完后合并到master, 之后删除bug分支再回来继续工作, 此时需要隐藏正在做的工作
   - `git stash`
@@ -110,6 +126,7 @@ tags:
 - `git merge branch_name`
   - `git merge 分支名`直接这样使用不会看到合并信息
   - `git merge  --no-ff -m "info" 分支名`这样在log中能看到提交的信息
+
 - dev分支和master合并发生冲突
   1. 新建分支并切换`git checkout -b 分支名`
   2. 切换分支`git checkout 分支名`
@@ -122,6 +139,7 @@ tags:
      - 此时dev分支并没有改变
        - 切换到dev分支: `git checkout dev`
        - 合并master到dev: `git merge master`, 这样才能保master和dev分支一致 ​
+       
 - git rebase合并分支
   - 使用git rebase合并分支，如果出现冲突，  会出现在另一个分支上
   - 解决冲突后， 直接add就能将解决后的版本加入master分支
