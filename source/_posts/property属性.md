@@ -5,14 +5,6 @@ categories: Python
 tags:
 ---
 
-
----
-title: property属性
-date: 2017-08-08 08:13:35
-categories: Python
-tags:
----
-
 `property`是实现数据可管理性的内建数据类型, 其实质是一种特殊的数据描述符(实现了`__get__()`和`__set__`方法, 称为数据描述符)
 
 
