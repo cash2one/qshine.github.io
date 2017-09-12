@@ -152,6 +152,76 @@ AttributeError: can't set attribute
 
 ```
 
+### Property实现
+```python
+class Property(object):
+	def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+		self.fget = fget
+		self.fset = fset
+		self.fdel = fdel
+		self.__doc__ = doc
+
+	def __get__(self, obj, objtype=None):
+		if obj is None:
+			return self
+		if self.fget is None:
+			raise AttributeError, "unreadable attribute"
+		return self.fget(obj)
+
+	def __set__(self, obj, value):
+		if obj is None:
+			return self
+		if self.fset is None:
+			raise AttributeError, "can't set attribute"
+		self.fset(obj, value)
+
+	def __delete__(self, obj):
+		if self.fdel is None:
+			raise AttributeError, "can't delete attribute"
+		self.fdel(obj)
+
+
+
+class Test(object):
+	def __init__(self, age):
+		self._age = age
+
+	def get_age(self):
+		print('get method')
+		return self._age
+
+	def set_age(self, value):
+		print('set meghod')
+		if value < 0 or value > 200:
+			raise Exception('ERROR')
+		self._age = value
+
+	def del_age(self):
+		print('del method')
+		del self._age
+
+	age = Property(get_age, set_age, del_age)
+
+if __name__ == '__main__':
+	t = Test(20)
+	print(t.age)
+	t.age = 50
+	print t.age
+	del t.age
+
+
+
+"""
+get method
+20
+set meghod
+get method
+50
+del method
+"""
+
+```
+
 
 #### 参考
 - <<改善python程序的91条建议>>
