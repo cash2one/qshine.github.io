@@ -37,10 +37,19 @@ yum install gcc
 yum install python-devel
 ```
 5. 出现`mysql-connector`错误
-安装 
 ```
 pip install mysql-connector
 ```
+如果提示错误的话执行以下语句
+```
+pip install mysql-connector-python-rf
+```
+```python
+In [1]: import mysql.connector
+
+In [2]:
+```
+不报错即可
 
 
 # 运行起来后的错误
