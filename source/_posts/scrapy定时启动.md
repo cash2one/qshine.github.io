@@ -3,7 +3,7 @@ title: scrapy定时启动
 date: 2017-09-09 19:01:54
 categories: 爬虫
 tags:
-  - Scrapy
+  - scrapy
 ---
 
 使用linux下的**cron**设置可以使scrapy定时启动, 方便做定时抓取,

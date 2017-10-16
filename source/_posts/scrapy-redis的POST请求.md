@@ -3,8 +3,7 @@ title: scrapy-redis的POST请求
 date: 2017-07-31 20:35:50
 categories: 爬虫
 tags:
-  - python
-  - 爬虫
+  - scrapy
 ---
 
 一直使用的`scrapy-redis`做的分布式爬虫, 今天要爬的一个站要进行搜索, 入口函数是`POST`请求的, 但是`scrapy-redis`针对`start_urls`默认是`GET`的, 于是怎样传参数成了一个问题.

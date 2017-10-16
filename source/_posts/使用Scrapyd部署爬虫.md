@@ -3,7 +3,7 @@ title: 使用Scrapyd部署爬虫
 date: 2017-05-23 04:45:29
 categories: 爬虫
 tags:
-  - Scrapy
+  - scrapy
 ---
 
 

@@ -3,7 +3,7 @@ title: 脚本启动Scrapy
 date: 2017-06-16 04:12:02
 categories: 爬虫
 tags:
-  - Scrapy
+  - scrapy
 ---
 
 [官方文档_脚本启动爬虫](https://doc.scrapy.org/en/latest/topics/practices.html)
