@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>Django使用Nginx和Gunicorn部署文档 | qshine</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Django使用Nginx和Gunicorn部署文档</h1><a id="logo" href="/.">qshine</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">Django使用Nginx和Gunicorn部署文档</h1><div class="post-meta">May 25, 2017<span> | </span><span class="category"><a href="/categories/Web后端/">Web后端</a></span></div><div class="post-content"><p>实时爬虫使用的Django做后端, 最近要放到生产服务器上了, 想起之前部署的时候一段痛苦的经历, 这次一定把每一个步骤记下来.</p>
+<p>环境: <code>Ubuntu16.04</code>, <code>gunicorn</code></p>
+<p>收藏资料</p>
+<ul>
+<li><a href="https://segmentfault.com/a/1190000003756582" target="_blank" rel="external">Django安全配置settings详解</a></li>
+<li><a href="https://segmentfault.com/a/1190000002797601" target="_blank" rel="external">Nginx配置文件详解</a></li>
+<li><a href="http://www.isaced.com/post-248.html" target="_blank" rel="external">Django+Nginx+Gunicorn部署文档</a></li>
+</ul>
+<h3 id="一-新建Django项目"><a href="#一-新建Django项目" class="headerlink" title="一 . 新建Django项目"></a>一 . 新建Django项目</h3><p>首先创建一个虚拟环境来隔离不同的版本.</p>
+<p>新建一个目录<code>Deploy_test</code>, 在其中</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mkdir Deploy_test</div><div class="line">cd Deploy_test</div></pre></td></tr></table></figure>
+<p>进入<code>virtualenv</code>创建的虚拟环境来新建django项目</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">django-admin.py startproject mysite</div></pre></td></tr></table></figure>
+<p>此时我的项目目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">(xh_venv) ql@ubuntu:~/Deploy_test/mysite$ tree</div><div class="line">.</div><div class="line">├── manage.py</div><div class="line">└── mysite</div><div class="line">    ├── __init__.py</div><div class="line">    ├── settings.py</div><div class="line">    ├── urls.py</div><div class="line">    └── wsgi.py</div><div class="line"></div><div class="line">1 directory, 5 files</div><div class="line">(xh_venv) ql@ubuntu:~/Deploy_test/mysite$</div></pre></td></tr></table></figure>
+<p>进行测试</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">cd mysite</div><div class="line">python manage.py makemigrations    </div><div class="line">python manage.py migrate            </div><div class="line">python manage.py createsuperuser </div><div class="line">python manage.py runserver 0.0.0.0:8000</div></pre></td></tr></table></figure>
+<p>打开浏览器进行测试, 访问<code>ip:8000/admin</code>, 此时正常的话会现实后台页面</p>
+<p><strong>注意:</strong> 如果你提前设置了<code>settings.py</code>的<code>DEBUG=False</code>, 那么后台是没有样式的</p>
+<a id="more"></a>
+<h3 id="二-测试gunicorn"><a href="#二-测试gunicorn" class="headerlink" title="二. 测试gunicorn"></a>二. 测试gunicorn</h3><p>还是在虚拟环境中安装gunicorn</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install gunicorn</div></pre></td></tr></table></figure>
+<p>还是在<code>mysite</code>目录内</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gunicorn mysite.wsgi:application -b 0.0.0.0:8000</div></pre></td></tr></table></figure>
+<p>没有在这里卡住, 此时再去测试后台页面是否能正常打开</p>
+<p><strong>注意:</strong> 使用gunicorn后不管<code>settings.py</code>中<code>DEBUG</code>的值是多少, 都是没有样式的, 因为不知道静态文件在哪, 如果发现有样式, 别慌, 把浏览器缓存干掉就没了…</p>
+<h3 id="三-使用Nginx"><a href="#三-使用Nginx" class="headerlink" title="三. 使用Nginx"></a>三. 使用Nginx</h3><ul>
+<li><p>修改<code>settings.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">DEBUG = <span class="keyword">False</span></div><div class="line">ALLOWED_HOSTS = [(<span class="string">'*'</span>)]   <span class="comment"># 测试方便使用 *</span></div><div class="line">......</div><div class="line"><span class="comment"># 在最后加上这一句</span></div><div class="line">STATIC_ROOT = os.path.join(BASE_DIR, <span class="string">'static'</span>)</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>​      <code>ALLOWED_HOSTS</code>是为了限定请求中的host值,以防止黑客构造包来发送请求.只有在列表中的host才能访问.强烈建议不要使用<code>*</code>通配符去配置,另外当<code>DEBUG</code>设置为<code>False</code>的时候必须配置这个配置.否则会抛出异常</p>
+<ul>
+<li><p>收集<code>所有的静态文件到该目录中</code></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python manage<span class="selector-class">.py</span> collectstatic</div></pre></td></tr></table></figure>
+<p>然后就能看到项目中多了一个static文件夹</p>
+</li>
+<li><p>安装Nginx</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt update</div><div class="line">sudo apt upgrade</div><div class="line">sudo apt install nginx</div></pre></td></tr></table></figure>
+</li>
+<li><p>停止Nginx</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo<span class="built_in"> service </span>nginx stop</div></pre></td></tr></table></figure>
+</li>
+<li><p>备份Nginx默认配置文件</p>
+<p>Nginx的默认配置文件路径: <code>/etc/nginx/sites-available/default</code></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd /etc/nginx/sites-available/</div><div class="line">sudo cp<span class="built_in"> default </span>default.bak</div></pre></td></tr></table></figure>
+</li>
+<li><p>修改配置文件<code>sudo vim default</code>为如下内容</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">        <span class="attribute">listen</span>   <span class="number">80</span>;</div><div class="line"></div><div class="line">        <span class="attribute">server_name</span> _;</div><div class="line">        <span class="attribute">access_log</span>  /var/log/nginx/isaced.log;</div><div class="line"></div><div class="line">        <span class="attribute">location</span> / &#123;</div><div class="line">                <span class="attribute">proxy_pass</span> http://127.0.0.1:8000;</div><div class="line">                <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;</div><div class="line">                <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</div><div class="line">                <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="attribute">location</span> /static/ &#123;</div><div class="line">                <span class="attribute">root</span> /home/ql/Deploy_test/mysite;</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>listen: 监听80端口</li>
+<li>server_name: 配置基于名称的虚拟主机, 可以基于正则表达式, 暂时不管</li>
+<li>access_log</li>
+<li>location /<ul>
+<li>proxy_pass: 请求转向backend定义的服务器列表, 即反向代理</li>
+<li>剩余3个暂且这样设置</li>
+</ul>
+</li>
+<li>location /static/<ul>
+<li>root: 后面必须是mysite的根路径, Nginx会去这里面找到收集的静态文件</li>
+</ul>
+</li>
+</ul>
+<p>修改完后保存退出</p>
+</li>
+<li><p>测试</p>
+<ul>
+<li><p>启动gunicorn, 进入该项目的路径</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">nohup</span> <span class="selector-tag">gunicorn</span> <span class="selector-tag">mysite</span><span class="selector-class">.wsgi</span><span class="selector-pseudo">:application</span> <span class="selector-tag">-b</span> 127<span class="selector-class">.0</span><span class="selector-class">.0</span><span class="selector-class">.1</span><span class="selector-pseudo">:8000</span> <span class="selector-tag">-w</span> 4 &amp;</div></pre></td></tr></table></figure>
+<p><code>-w 4</code>表示启动4个进程, 默认为1</p>
+</li>
+<li><p>启动Nginx</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo<span class="built_in"> service </span>nginx start</div></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>Nginx那里坑特别多, 再加上对那块不熟悉, 导致可能为了搜错误来一趟谷歌旅游</p>
+<p>关于这块的一些建议:</p>
+<ul>
+<li><p>做好配置文件的备份</p>
+</li>
+<li><p>千万不要去kill掉nginx的进程号, 使用<code>sudo service nginx stop</code>来停止</p>
+</li>
+<li><p>使用<code>sudo nginx -t</code>进行测试</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ql<span class="variable">@ubuntu</span><span class="symbol">:/etc/nginx/sites-available</span><span class="variable">$ </span>sudo nginx -t</div><div class="line"><span class="symbol">nginx:</span> the configuration file /etc/nginx/nginx.conf syntax is ok</div><div class="line"><span class="symbol">nginx:</span> configuration file /etc/nginx/nginx.conf test is successful</div></pre></td></tr></table></figure>
+<p>成功的话问题应该就不大了</p>
+</li>
+</ul>
+</div><div class="tags"><a href="/tags/Django/">Django</a></div><div class="post-nav"><a href="/2017/05/28/选择排序/" class="pre">选择排序</a><a href="/2017/05/23/使用Scrapyd部署爬虫/" class="next">使用Scrapyd部署爬虫</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web后端/">Web后端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据结构和算法/">数据结构和算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/爬虫/">爬虫</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/tornado/" style="font-size: 15px;">tornado</a> <a href="/tags/爬虫/" style="font-size: 15px;">爬虫</a> <a href="/tags/OpenCV/" style="font-size: 15px;">OpenCV</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a> <a href="/tags/pyspider/" style="font-size: 15px;">pyspider</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/Django/" style="font-size: 15px;">Django</a> <a href="/tags/python开发环境/" style="font-size: 15px;">python开发环境</a> <a href="/tags/python模块/" style="font-size: 15px;">python模块</a> <a href="/tags/supervisor/" style="font-size: 15px;">supervisor</a> <a href="/tags/数据结构和算法/" style="font-size: 15px;">数据结构和算法</a> <a href="/tags/scrapy/" style="font-size: 15px;">scrapy</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/09/20/CentOS7安装MySQL/">CentOS7安装MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/12/动态规划三台阶问题/">动态规划(三)台阶问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/10/python名字查找机制/">python名字查找机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/09/scrapy定时启动/">scrapy定时启动</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/05/Charles和安卓设置/">Charles和安卓设置</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/03/狄克斯特拉算法/">狄克斯特拉算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/29/property属性/">property属性</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/25/getattr-和-getattribute-方法/">__getattr__和__getattribute__方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/24/python魔术方法/">python魔术方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/08/24/python类的构造方法-new/">python类的构造方法__new__</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2017 <a href="/." rel="nofollow">qshine.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
