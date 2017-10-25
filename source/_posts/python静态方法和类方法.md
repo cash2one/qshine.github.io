@@ -91,3 +91,9 @@ if __name__ == '__main__':
 ('classmethod is called', <class '__main__.A'>, 400)
 """
 ```
+
+
+### 资料
+- <<数据结构和算法>>
+- https://www.zhihu.com/question/20021164
+- https://www.zhihu.com/question/31844003
