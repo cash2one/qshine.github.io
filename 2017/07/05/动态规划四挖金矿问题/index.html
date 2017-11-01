@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>动态规划四挖金矿问题 | qshine</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">动态规划四挖金矿问题</h1><a id="logo" href="/.">qshine</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">动态规划四挖金矿问题</h1><div class="post-meta">Jul 5, 2017<span> | </span><span class="category"><a href="/categories/数据结构和算法/">数据结构和算法</a></span></div><div class="post-content"><h3 id="注-本篇内容为笔记-强烈公众号-梦见-解释的非常详细"><a href="#注-本篇内容为笔记-强烈公众号-梦见-解释的非常详细" class="headerlink" title="注: 本篇内容为笔记, 强烈公众号: 梦见, 解释的非常详细"></a>注: 本篇内容为笔记, 强烈公众号: <strong>梦见</strong>, 解释的非常详细</h3><p><strong>问题</strong>: 有一个国家发现了5座金矿，每座金矿的黄金储量不同，需要参与挖掘的工人数也不同。参与挖矿工人的总数是10人, 每座金矿要么全挖, 要么不挖, 怎么得到更多黄金?</p>
+<table>
+<thead>
+<tr>
+<th>金矿序号</th>
+<th>黄金数量</th>
+<th>需要工人数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>500</td>
+<td>5</td>
+</tr>
+<tr>
+<td>b</td>
+<td>200</td>
+<td>3</td>
+</tr>
+<tr>
+<td>c</td>
+<td>300</td>
+<td>4</td>
+</tr>
+<tr>
+<td>d</td>
+<td>350</td>
+<td>3</td>
+</tr>
+<tr>
+<td>e</td>
+<td>400</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p>看原文的时候是懵逼的, 不过一直记得&lt;&lt;图解算法&gt;&gt;里面说的<strong>所有动态规划问题都能用表格实现</strong>, </p>
+<table>
+<thead>
+<tr>
+<th>-</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a/500/5人</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>500(a)</td>
+<td>500(a)</td>
+<td>500(a)</td>
+<td>500(a)</td>
+<td>500(a)</td>
+<td>500(a)</td>
+</tr>
+<tr>
+<td>b/200/3人</td>
+<td>0</td>
+<td>0</td>
+<td>200(b)</td>
+<td>200(b)</td>
+<td>500(a)</td>
+<td>500(a)</td>
+<td>500(a)</td>
+<td>700(ab)</td>
+<td>700(ab)</td>
+<td>700(ab)</td>
+</tr>
+<tr>
+<td>c/300/4人</td>
+<td>0</td>
+<td>0</td>
+<td>200(b)</td>
+<td>300(c)</td>
+<td>500(a)</td>
+<td>500(a)</td>
+<td>500(a)</td>
+<td>700(ab)</td>
+<td>800(ac)</td>
+<td>800(ac)</td>
+</tr>
+<tr>
+<td>d/350/3人</td>
+<td>0</td>
+<td>0</td>
+<td>350(d)</td>
+<td>350(d)</td>
+<td>500(a)</td>
+<td>550(bd)</td>
+<td>650(cd)</td>
+<td>850(ad)</td>
+<td>850(ad)</td>
+<td>850(ad)</td>
+</tr>
+<tr>
+<td>e/400/5人</td>
+<td>0</td>
+<td>0</td>
+<td>350(d)</td>
+<td>350(d)</td>
+<td>500(a)</td>
+<td>550(bd)</td>
+<td>650(cd)</td>
+<td>850(ad)</td>
+<td>850(ad)</td>
+<td>900(ae)</td>
+</tr>
+</tbody>
+</table>
+<p>以上可看到最大是<code>900(ae)</code>, 金矿序号并不需要从大到小排列, 不会影响结果.</p>
+<p>每个单元格value的计算公式是<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attr">x</span> = 上一行同一列的单元格的值</div><div class="line"><span class="attr">y</span> = 当前行金矿价值 + 上一行中[剩余工人数]对应单元格的值</div><div class="line"><span class="attr">value</span> = max(x, y)</div></pre></td></tr></table></figure></p>
+<p>和最长公共子序列一样, 都能使用单元格表示法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># coding:utf-8</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">(golds, peoples)</span>:</span></div><div class="line">    golds.insert(<span class="number">0</span>, [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>])       <span class="comment"># 给golds列表插入一行</span></div><div class="line">    golds_length = len(golds)        <span class="comment"># y轴</span></div><div class="line">    peoples_length = peoples + <span class="number">1</span>     <span class="comment"># x轴</span></div><div class="line">    </div><div class="line">    <span class="comment"># 构建表格, 多一行和一列</span></div><div class="line">    tables = [[<span class="number">0</span>]*peoples_length <span class="keyword">for</span> i <span class="keyword">in</span> range(golds_length)]</div><div class="line"></div><div class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> xrange(<span class="number">1</span>, golds_length):</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, peoples_length):</div><div class="line">            <span class="keyword">if</span> i &gt;= golds[j][<span class="number">2</span>]:</div><div class="line">                tables[j][i] = max(tables[j<span class="number">-1</span>][i], golds[j][<span class="number">1</span>]+tables[j<span class="number">-1</span>][i-golds[j][<span class="number">2</span>]])</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                tables[j][i] = tables[j<span class="number">-1</span>][i]</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> tables[<span class="number">1</span>:]:</div><div class="line">        <span class="keyword">print</span> row[<span class="number">1</span>:]</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">test([</div><div class="line">        [<span class="string">'a'</span>, <span class="number">400</span>, <span class="number">5</span>],</div><div class="line">        [<span class="string">'b'</span>, <span class="number">500</span>, <span class="number">5</span>],</div><div class="line">        [<span class="string">'c'</span>, <span class="number">200</span>, <span class="number">3</span>],</div><div class="line">        [<span class="string">'d'</span>, <span class="number">300</span>, <span class="number">4</span>],</div><div class="line">        [<span class="string">'e'</span>, <span class="number">350</span>, <span class="number">3</span>],</div><div class="line">    ], <span class="number">10</span>)</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line"><span class="string">输出</span></div><div class="line"><span class="string">[0, 0, 0, 0, 400, 400, 400, 400, 400, 400]</span></div><div class="line"><span class="string">[0, 0, 0, 0, 500, 500, 500, 500, 500, 900]</span></div><div class="line"><span class="string">[0, 0, 200, 200, 500, 500, 500, 700, 700, 900]</span></div><div class="line"><span class="string">[0, 0, 200, 300, 500, 500, 500, 700, 800, 900]</span></div><div class="line"><span class="string">[0, 0, 350, 350, 500, 550, 650, 850, 850, 900]</span></div><div class="line"><span class="string">"""</span></div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>5金矿10工人, 动态规划需要计算50次, 递归需要计算2^5是32次</li>
+<li>10金矿10工人, 动态规划需要计算100次, 递归需要计算2^10是1024次</li>
+<li>5金矿1000工人, 动态规划计算5000次, 递归计算32次</li>
+<li>10金矿1000工人, 动态规划10000次, 递归1024次</li>
+</ol>
+<p>当工人数量很多的时候, 动态规划不如递归, 具体看应用场景</p>
+</div><div class="tags"></div><div class="post-nav"><a href="/2017/07/07/supervisor使用笔记/" class="pre">supervisor使用笔记</a><a href="/2017/07/02/git常用命令总结/" class="next">git常用命令总结</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Docker/">Docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Git/">Git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web后端/">Web后端</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/安全/">安全</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据结构和算法/">数据结构和算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/爬虫/">爬虫</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/工具/" style="font-size: 15px;">工具</a> <a href="/tags/安全/" style="font-size: 15px;">安全</a> <a href="/tags/Django/" style="font-size: 15px;">Django</a> <a href="/tags/OpenCV/" style="font-size: 15px;">OpenCV</a> <a href="/tags/pyspider/" style="font-size: 15px;">pyspider</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/爬虫/" style="font-size: 15px;">爬虫</a> <a href="/tags/tornado/" style="font-size: 15px;">tornado</a> <a href="/tags/python开发环境/" style="font-size: 15px;">python开发环境</a> <a href="/tags/python模块/" style="font-size: 15px;">python模块</a> <a href="/tags/supervisor/" style="font-size: 15px;">supervisor</a> <a href="/tags/scrapy/" style="font-size: 15px;">scrapy</a> <a href="/tags/数据结构和算法/" style="font-size: 15px;">数据结构和算法</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/10/23/Docker-四-数据卷/">Docker(四)数据卷</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/10/22/图的遍历/">图的遍历</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/10/18/Django使用已存在表/">Django使用已存在表</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/10/16/二叉堆/">二叉堆</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/25/python静态方法和类方法/">python静态方法和类方法</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/20/CentOS7安装MySQL/">CentOS7安装MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/12/动态规划三台阶问题/">动态规划(三)台阶问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/10/python名字查找机制/">python名字查找机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/09/scrapy定时启动/">scrapy定时启动</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/05/Charles和安卓设置/">Charles和安卓设置</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2017 <a href="/." rel="nofollow">qshine.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
